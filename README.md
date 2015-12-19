@@ -1,0 +1,1 @@
+The Kaggle Competition for Titanic project, created by Jia Xu, Di Ni and Yun Li.
