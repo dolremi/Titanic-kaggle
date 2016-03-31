@@ -1,1 +1,2 @@
-The Kaggle Competition for Titanic project, created by Jia Xu, Di Ni and Yun Li.
+The Titanic Datasets
+The Goal of this project is to predict the survival of the person given the information.
