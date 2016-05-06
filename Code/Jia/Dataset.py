@@ -22,6 +22,30 @@ class utility_dataset:
         self.__data = dataset
         self.__name = name
     
+    def show_features(self):
+        print "Here is the feature list of %s dataset:" %self.__name
+        print self.__data.columns.values    
+    
+    def show_info(self):
+        print "Here is some basic information of %s dataset:" %self.__name
+        print "Some sample datasets: "
+        print self.__data.head()
+        print "-"*30
+        print "The data type : "
+        print self.__data.dtypes
+        print "-"*30
+        print "The general information of the dataset: "
+        print self.__data.describe()
+       
+    def handle_category(self, feature, add_na=False):
+        if feature in self.__data.columns.values:
+            dummy_frame = pd.get_dummies(self.__data[feature],dummy_na=add_na)
+            self.__data = self.__data.join(dummy_frame)
+        else:
+            print "%s is not in feature list!" %feature
+            print "-"*30
+            self.show_features()
+        
     def type_gen(self):
         self.__data["Type"] = self.__data[["Sex","Age"]].apply(self.get_type, axis = 1)
         self.__data = self.__data.drop("Sex",1)
@@ -62,10 +86,6 @@ class utility_dataset:
     
     def trans_embarked(self):
         self.__data["Embarked"] = self.__data["Embarked"].apply(self.transfer_embarked)
-
-    def show_features(self):
-        print "Here is the feature list of {%0} dataset:" %self.__name
-        print self.__data.columns.values.to_list()
         
     def gen_train_features(self):
         if "Survived" in self.show_features():
@@ -103,13 +123,13 @@ class data_set:
    """
    data_set class will handle most of the work
    """
-   def __init__(self, train_name, test_name):
+   def __init__(self, train_name=None, test_name=None):
        if train_name is None:
            train_name = "../../data/original/train.csv"
        if test_name is None:
            test_name = "../../data/original/test.csv"
-       self.__train_data = pd.read_csv(train_name)
-       self.__test_data = pd.read_csv(test_name) 
+       self.__train_data = pd.read_csv(train_name, dtype={"Age": np.float64})
+       self.__test_data = pd.read_csv(test_name, dtype={"Age":np.float64}) 
        self.__train_utility = utility_dataset(self.__train_data, "training")
        self.__test_utility = utility_dataset(self.__test_data, "test")
     
@@ -121,7 +141,7 @@ class data_set:
        self.__train_data.to_csv(train_out)
        self.__test_data.to_csv(test_out)
     
-   def show_features(self, name):
+   def show_features(self, name="train"):
        if name == "train":
            self.__train_utility.show_features()
        else:
