@@ -6,23 +6,22 @@ with the prediction
 """
 
 import pandas as pd
-import re
 import numpy as np
 import matplotlib.pyplot as plt
-
 from sklearn.ensemble import ExtraTreesClassifier
 
-
-
-class utility_dataset:
+class DataUtilityBase:
     """
-    The class that does all the utility stuff for the dataset
+    The base utility class do the basic utlity jobs includes showing all the
+    basic information of the features, handle the category feature for the 
+    prediction, impute the missing features via the median/mode or even via 
+    machine learning algorithm, show the importance of the features.
     """
     def __init__(self, dataset, name):
         self.__data = dataset
         self.__name = name
     
-    def show_features(self):
+    def show_all(self):
         print "Here is the feature list of %s dataset:" %self.__name
         print self.__data.columns.values    
     
@@ -36,6 +35,11 @@ class utility_dataset:
         print "-"*30
         print "The general information of the dataset: "
         print self.__data.describe()
+        
+    def show_feature(self, feature):
+        print "Details of %s as follow:" %feature 
+        if feature in self.__data.columns.values:
+            print self.data[feature].describe()
        
     def handle_category(self, feature, add_na=False):
         if feature in self.__data.columns.values:
@@ -44,58 +48,23 @@ class utility_dataset:
         else:
             print "%s is not in feature list!" %feature
             print "-"*30
-            self.show_features()
-        
-    def type_gen(self):
-        self.__data["Type"] = self.__data[["Sex","Age"]].apply(self.get_type, axis = 1)
-        self.__data = self.__data.drop("Sex",1)
-    
-    def family_gen(self):
-        self.__data["Family"] = self.__data["Parch"] + self.__data["SibSp"]
-        self.__data = self.__data.drop(["Parch", "SibSp"], 1)
-        
-    def title_gen(self):
-        titles = self.__data["Name"].apply(self.get_title)
-        self.__data["Title"] = titles
-    
-    def last_gen(self):
-        last_name = self.__data["Name"].apply(lambda x: x.split(",")[0])
-        self.__data["LastName"] = last_name
-    
-    def title_and_last_gen(self):
-        self.last_gen()
-        self.title_gen()
-        self.__data = self.__data.drop("Name", 1)
-        
-    def get_type(self, passenger):
-        sex, age = passenger
-        return 'child' if age < 16 else sex
-    
-    def get_title(self, name):
-        title_search = re.search(' ([A-Za-z]+)\.', name)
-        if title_search:
-            return title_search.group(1)
-    
-    def transfer_embarked(self, embark):
-        if embark == "S":
-            return 1
-        elif embark == "C":
-            return 2
-        else:
-            return 3
-    
-    def trans_embarked(self):
-        self.__data["Embarked"] = self.__data["Embarked"].apply(self.transfer_embarked)
-        
-    def gen_train_features(self):
-        if "Survived" in self.show_features():
-            self.__x = self.__data.drop("Survived",1)
-            self.__y = self.__data
-        else:
-            self.__x = self.__data
+            self.show_all()
+                
+    def show_missing(self):
+        print "Feature: No. of missing features"
+        for feature in self.__data.columns.values:
+            print feature + ": " +self.__data[feature].isnull().sum()
             
-    def gen_important_features(self):
-        self.gen_train_features()
+    def impute_miss_default(self, feature, average=None):
+        if self.__data[feature].dtype == "category":
+            self.__data[feature].fillna(self.__data[feature].mode())
+        elif average == None:
+            self.__data[feature].fillna(self.__data[feature].median())
+        else:
+            self.__data[feature].fillna(self.__data[feature].mean())
+            
+    def get_important_features(self):
+        self._train_features()
         forest = ExtraTreesClassifier(n_estimators = 250,
                                       random_state = 0)
         forest.fit(self.__x, self.__y)
@@ -117,57 +86,13 @@ class utility_dataset:
         plt.xticks(range(self.__x.shape[1]), indices)
         plt.xlim([-1, self.__x.shape[1]])
         plt.show()
-        
+   def _train_features(self, predict_result):
+        if predict_result in self.__data.columns.values:
+            self.__x = self.__data.drop(predict_result,1)
+            self.__y = self.__data
+        else:
+            self.__x = self.__data        
 
-class data_set:
-   """
-   data_set class will handle most of the work
-   """
-   def __init__(self, train_name=None, test_name=None):
-       if train_name is None:
-           train_name = "../../data/original/train.csv"
-       if test_name is None:
-           test_name = "../../data/original/test.csv"
-       self.__train_data = pd.read_csv(train_name, dtype={"Age": np.float64})
-       self.__test_data = pd.read_csv(test_name, dtype={"Age":np.float64}) 
-       self.__train_utility = utility_dataset(self.__train_data, "training")
-       self.__test_utility = utility_dataset(self.__test_data, "test")
-    
-   def output(self, train_out, test_out):
-       if train_out is None:
-           train_out = "../../data/modified/train.csv"
-       if test_out is None:
-           test_out = "../../data/modified/test.csv"
-       self.__train_data.to_csv(train_out)
-       self.__test_data.to_csv(test_out)
-    
-   def show_features(self, name="train"):
-       if name == "train":
-           self.__train_utility.show_features()
-       else:
-           self.__test_utility.show_features()
-           
-   def clean(self):
-       self.__train_data["Embarked"].fillna(
-                     self.__train_data["Embarked"].value_counts().id_max(), 
-                                            inplace = True)
-       self.__test_data["Fare"].fillna(self.__test_data["Fare"].median(), 
-                                            inplace = True)
-       self.__train_utility.trans_embarked()
-       self.__test_utility.trans_embarked()
-   
-   def gen_type(self):
-       self.__train_utility.type_gen()
-       self.__test_utility.type_gen()
-       
-   def gen_family(self):
-       self.__train_utility.family_gen()
-       self.__test_utility.family_gen()
-    
-   def gen_title_and_last(self):
-       self.__train_utility.title_and_last_gen()
-       self.__test_utility.title_and_last_gen()
-       
-   
+
             
    
