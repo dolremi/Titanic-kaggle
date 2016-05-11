@@ -55,7 +55,7 @@ class DataUtilityBase:
         for feature in self.__data.columns.values:
             print feature + ": " +self.__data[feature].isnull().sum()
             
-    def impute_miss_default(self, feature, average=None):
+    def impute_miss_default(self, feature, average = None):
         if self.__data[feature].dtype == "category":
             self.__data[feature].fillna(self.__data[feature].mode())
         elif average == None:
@@ -63,33 +63,42 @@ class DataUtilityBase:
         else:
             self.__data[feature].fillna(self.__data[feature].mean())
             
-    def get_important_features(self):
-        self._train_features()
+    def get_important_features(self, outcome, feature_list = None):
+        self._pretrain(outcome, feature_list)
         forest = ExtraTreesClassifier(n_estimators = 250,
                                       random_state = 0)
         forest.fit(self.__x, self.__y)
+        if feature_list == None:
+            feature_list = self.__x.columns.values
+            
         importances = forest.feature_importances_
         std = np.std([tree.feature_importances_ for tree in forest.estimators_],
              axis=0)
         indices = np.argsort(importances)[::-1]
+        features = []
 
          # Print the feature ranking
         print("Feature ranking:")
         for f in range(self.__x.shape[1]):
-             print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
+             print("%d. feature %s (%f)" % (f + 1, feature_list[indices[f]], importances[indices[f]]))
+             features.append(feature_list[indices[f]])
 
          # Plot the feature importances of the forest
         plt.figure()
         plt.title("Feature importances")
         plt.bar(range(self.__x.shape[1]), importances[indices],
         color="r", yerr=std[indices], align="center")
-        plt.xticks(range(self.__x.shape[1]), indices)
+        plt.xticks(range(self.__x.shape[1]), features)
         plt.xlim([-1, self.__x.shape[1]])
         plt.show()
-   def _train_features(self, predict_result):
+
+    def _pretrain(self, predict_result, feature_list = None ):
         if predict_result in self.__data.columns.values:
-            self.__x = self.__data.drop(predict_result,1)
-            self.__y = self.__data
+            if feature_list == None:
+                self.__x = self.__data.drop(predict_result,1)
+            else:
+                self.__x = self.__data[feature_list]
+            self.__y = self.__data[predict_result]
         else:
             self.__x = self.__data        
 
