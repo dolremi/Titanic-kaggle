@@ -9,6 +9,8 @@ import re
 from Dataset import DataUtilityBase
 
 class TitanicUtility(DataUtilityBase):
+    def __init__(self, dataset,name):
+        DataUtilityBase.__init__(dataset, name)
     
     def type_gen(self):
         self.__data["Type"] = self.__data[["Sex","Age"]].apply(self.get_type, axis = 1)
