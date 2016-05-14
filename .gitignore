@@ -66,3 +66,8 @@ target/
 data/original/.DS_Store
 data/.DS_Store
 
+# custom temporary files
+*/temp.*
+*/temp/
+*/tmp.*
+*/tmp/
