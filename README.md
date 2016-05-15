@@ -12,6 +12,7 @@ The Goal of this project is to predict the survival of the person given the info
 
 ## Quick start
 - See `visualize/Data_Explore_Jia.ipynb` for explorations over data and features.
+- Add `<repo path>` to your `PYTHONPATH` if you want to import this as package.
 
 ## What's new
 - Restructured as package format. 
