@@ -5,8 +5,13 @@ Created on Sun May  8 20:52:32 2016
 @author: jiaxu
 """
 import pandas as pd
+<<<<<<< HEAD:Code/Jia/TitanicData.py
 from Dataset import DataUtilityBase
 import numpy as np
+=======
+import numpy as np
+from dataset import DataUtilityBase
+>>>>>>> origin/master:titanic/data/titanicdata.py
 
 class TitanicData:
    """

@@ -39,7 +39,12 @@ class DataUtilityBase:
     def show_feature(self, feature):
         print "Details of %s as follow:" %feature 
         if feature in self.__data.columns.values:
-            print self.data[feature].describe()
+            print self.__data[feature].describe()
+            
+    def show_features(self):
+        self.show_all()
+        for feature in self.__data.columns.values:
+            self.show_feature(feature)
        
     def handle_category(self, feature, add_na=False):
         if feature in self.__data.columns.values:
