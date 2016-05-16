@@ -6,7 +6,7 @@ Created on Sun May  8 20:59:57 2016
 """
 
 import re
-from Dataset import DataUtilityBase
+from dataset import DataUtilityBase
 
 class TitanicUtility(DataUtilityBase):
     def __init__(self, dataset,name):

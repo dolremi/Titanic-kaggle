@@ -66,6 +66,18 @@ target/
 data/original/.DS_Store
 data/.DS_Store
 
+# __Vim__
+# swap
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
+
 # custom temporary files
 */temp.*
 */temp/

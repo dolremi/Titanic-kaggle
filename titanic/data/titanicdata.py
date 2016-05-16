@@ -5,7 +5,8 @@ Created on Sun May  8 20:52:32 2016
 @author: jiaxu
 """
 import pandas as pd
-from Dataset import DataUtilityBase
+import numpy as np
+from dataset import DataUtilityBase
 
 class TitanicData:
    """
