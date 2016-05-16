@@ -6,6 +6,7 @@ Created on Sun May  8 20:52:32 2016
 """
 import pandas as pd
 from Dataset import DataUtilityBase
+import numpy as np
 
 class TitanicData:
    """
