@@ -46,3 +46,22 @@ class Select (Map) :
     def __init__(self, names) :
         super().__init__(names=names, func=identity)
         
+def gen_naive_embedding_info(name, possible_values, others=False) :
+    feat_map = dict((v, i) for i, v in enumerate(possible_values))
+    zeros = [0 for _ in possible_values]
+    default_index = None
+    features = [name+'_'+str(v) for v in possible_values]
+    if others : 
+        features.append(name+'_'+'others')
+        zeros.append(0)
+        default_index = len(zeros) - 1
+    def converter(x) :
+        outputs = list(zeros)
+        outputs[feat_map.get(x, default_index)] = 1
+        return outputs
+    info = {
+        'from_names' : [name],
+        'to_names' : features,
+        'func' : converter,
+    }
+    return features, info
