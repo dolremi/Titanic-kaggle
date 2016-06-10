@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Dataset module to create features from the raw data set, clean the data, handle
-the missing data in the feature and filter the important features in regard 
-with the prediction
+Dataflow module is the base pipeline that can do I/O process, basic information
+and details, data preprocessing, model training etc.  
 """
 
 import pandas as pd
@@ -10,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.ensemble import ExtraTreesClassifier
 
-class DataUtilityBase:
+class DataFlow:
     """
     The base utility class do the basic utlity jobs includes showing all the
     basic information of the features, handle the category feature for the 
@@ -59,6 +58,10 @@ class DataUtilityBase:
         print "Feature: No. of missing features"
         for feature in self.__data.columns.values:
             print feature + ": " +self.__data[feature].isnull().sum()
+    
+    @property
+    def values(self):
+        return self.__data
             
     def impute_miss_default(self, feature, average = None):
         if self.__data[feature].dtype == "category":
